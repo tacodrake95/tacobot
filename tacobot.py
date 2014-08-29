@@ -41,7 +41,8 @@ class tacobot:
                         "join" : self.join,
                         "nick" : self.nickChange,
                         "commands" : self.commands,
-                        "log" : self.islogging
+                        "log" : self.islogging,
+                        "action" : self.do
                         }
         self.host = "irc.subluminal.net"
         self.port = 6697
@@ -113,7 +114,7 @@ class tacobot:
 
     def action(self, msg, chan):
         self.send("PRIVMSG %s :\x01ACTION %s\x01" % (chan, msg))
-        text = "%s *%s %s" % (str(datetime.datetime.now().time()).split(".")[0], self.bNick, msg)
+        text = "%s *%s %s" % (str(datetime.datetime.now().time()).split(".")[0], self.bnick, msg)
         self.log(chan, text)
 
     def getAuth(self, nick):
@@ -141,12 +142,12 @@ class tacobot:
     def log(self, chan, text):
         if b.writelogs:
             log = open("%s_log.log" % chan.strip(), "a")
-            log.write(text)
+            log.write("%s\n" % text)
             log.close()
 
     def msg(self, msg, chan):
         self.send("PRIVMSG %s :\x0310%s" % (chan, msg))
-        text = "%s <%s> %s" % (str(datetime.datetime.now().time()).split(".")[0], self.bNick, msg)
+        text = "%s <%s> %s" % (str(datetime.datetime.now().time()).split(".")[0], self.bnick, msg)
         self.log(chan, text)
 
 
@@ -168,7 +169,10 @@ class tacobot:
                 self.msg("Writing to logs", self.chan)
             else:
                 self.msg("Not writing to logs", self.chan)
-            
+    
+    def do(self):
+        if self.hasArgs:
+            self.action(self.longArg, self.chan)
 
     def ping(self):
         if self.hasArgs:
