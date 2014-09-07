@@ -98,7 +98,10 @@ class tacobot:
         line = {"method" : "NOMETHOD"}
         names = ""
         while line["method"] != "353":
-            line = self.bufferFile.readline().rstrip("\r\n")
+            try:
+                line = self.bufferFile.readline().rstrip("\r\n")
+            except UnicodeDecodeError:
+                line = "NOMETHOD nouser!nohost :nomsg"
             if line.find("PING") == 0:
                self.send(line.replace("PING", "PONG", 1))
                line = {"method" : "NOMETHOD"}
@@ -337,12 +340,12 @@ class tacobot:
         if self.hasArgs:
             choices = self.longArg.split(",")
             i = 0
-            for i in range(1, len(choices)):
-                choices[i] = choices[i].strip()
-                if len(choices) > 1:
-                    self.msg("%s: %s" % (self.nick, random.choice(choices)), self.chan)
-                else:
-                    self.msg("%s: Not enough arguments" % self.nick, self.chan)
+            if len(choices) > 1:
+                for i in range(1, len(choices)):
+                    choices[i] = choices[i].strip()
+                self.msg("%s: %s" % (self.nick, random.choice(choices)), self.chan)
+            else:
+                self.msg("%s: Not enough arguments" % self.nick, self.chan)
         else:
             self.msg("%s: Not enough arguments." % self.nick, self.chan)
     
