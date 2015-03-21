@@ -28,8 +28,7 @@ class tacobot:
         
         sys.path.append(os.getcwd())
 
-        self.bnick = "tacobot"
-        self.master = "taco"
+        self.bnick = "TacoBell"
         self.commands = {
                         "raw" : self.raw,
                         "ping" : self.ping,
@@ -52,14 +51,14 @@ class tacobot:
                         "unload" : self.unloadModule,
                         "reload" : self.reloadModule
                         }
-        self.host = "znc.rly.sx"
-        self.port = 7778
-        self.ident = "tac"
+        self.host = "irc.esper.net"
+        self.port = 6697
+        self.ident = "tacobot"
         self.name = "Taco Bell Bot"
-        self.master = ["taco", "tacopanda95", "svkampen", "svk", "me"]
+        self.master = ["kingtaco"]
         self.bufferFile = ""
         self.s = socket.socket( )
-        #self.s = ssl.wrap_socket(self.s)
+        self.s = ssl.wrap_socket(self.s)
         self.writelogs = True
         self.modules = {}
 
@@ -74,7 +73,7 @@ class tacobot:
 
         self.pwd = open("%s%spwd.dat" % (os.getcwd(), pathSep)).readline().rstrip("\n")
 
-        file = open("inventory.json", "r")
+        file = open("einventory.json", "r")
 
         self.inventory = json.load(file)
         
@@ -86,9 +85,8 @@ class tacobot:
         self.bufferFile = self.s.makefile() 
 
         self.send("USER %s %s %s :%s" % (self.ident, self.host, self.bnick, self.name))
-        self.send("PASS taco:%s" % self.pwd)
         self.send("NICK %s" % self.bnick)
-        
+
 
     def parse(self, msg):
         splitmsg = msg.split(" ", 2)
@@ -97,7 +95,7 @@ class tacobot:
 
 
     def isMaster(self, nick):
-        if nick in self.master and self.getAuth(nick):
+        if nick.lower() in self.master and self.getAuth(nick):
             return True
         else:
             self.msg("%s: you're not my dad" % nick, self.chan)
@@ -106,23 +104,19 @@ class tacobot:
     def isInChannel(self, nick, chan):
         self.send("NAMES %s" % chan)
         line = {"method" : "NOMETHOD"}
-        inLine = ""
-        nicksLine = ""
         names = ""
-        while (inLine.find("366") != 0):
+        while line["method"] != "353":
             try:
-                inLine = self.bufferFile.readline().rstrip("\r\n")
+                line = self.bufferFile.readline().rstrip("\r\n")
             except UnicodeDecodeError:
-                inLine = "NOMETHOD nouser!nohost :nomsg"
-            if inLine.find("PING") == 0:
-                self.send(inLine.replace("PING", "PONG", 1))
-                line = {"method" : "NOMETHOD"}
-            elif inLine.find("353") == 0:
-                line = self.parse(inLine)
-                nicksLine += line["arg"]
-            print(inLine)
+                line = "NOMETHOD nouser!nohost :nomsg"
+            if line.find("PING") == 0:
+               self.send(line.replace("PING", "PONG", 1))
+               line = {"method" : "NOMETHOD"}
+            else:
+                line = self.parse(line)
         
-        names = nicksLine.rsplit(":", 1)[1].strip().lower()
+        names = line["arg"].rsplit(":", 1)[1].strip().lower()
         names = ([i.lstrip(" %s" % globals.flags) for i in names.split()])
         return nick in names
 
@@ -132,7 +126,7 @@ class tacobot:
     def action(self, msg, chan):
         self.send("PRIVMSG %s :\x01ACTION %s\x01" % (chan, msg))
         text = "%s *%s %s" % (str(datetime.datetime.now().time()).split(".")[0], self.bnick, msg)
-        #self.log(chan, text)
+        self.log(chan, text)
 
     def getAuth(self, nick):
         self.send("PRIVMSG NickServ ACC %s" % nick)
@@ -147,7 +141,7 @@ class tacobot:
              
         self.args = line["arg"].split()
         print(line["arg"])
-        return(self.args[1].strip(":") in self.master and self.args[2]== "ACC" and self.args[3] == "3")
+        return(self.args[2]== "ACC" and self.args[3] == "3")
 
     def toggle(self, boolean):
         try:
@@ -279,7 +273,7 @@ class tacobot:
             self.save()
             
         if self.hasArgs:
-            if True:#self.isInChannel(toNick, self.chan):
+            if self.isInChannel(toNick, self.chan):
                 if not (toNick in self.inventory.keys()):
                     self.inventory[toNick] = {"dong": {"amount": 1}}
                     self.save()
@@ -342,14 +336,14 @@ class tacobot:
                 
         if len(self.inventory[self.nick]) == 1:
             for key in self.inventory[self.nick]:
-                args = "%s: you have %s %s in your ass." % (self.nick, self.inventory[self.nick][key]["amount"], key)
+                args = "%s: you have %s %s in your inventory." % (self.nick, self.inventory[self.nick][key]["amount"], key)
         elif len(self.inventory[self.nick]) == 2:
             i = 1
             for key in self.inventory[self.nick]:
                 if i == 1:
                     args = "%s: you have %s %s" % (self.nick, self.inventory[self.nick][key]["amount"], key)
                 else:
-                    args = "%s and %s %s in your ass." % (args, self.inventory[self.nick][key]["amount"], key)
+                    args = "%s and %s %s in your inventory." % (args, self.inventory[self.nick][key]["amount"], key)
                 i += 1                            
         else:
             i = 2
@@ -359,13 +353,13 @@ class tacobot:
                 elif i <= len(self.inventory[self.nick]):
                     args = "%s %s %s," % (args, self.inventory[self.nick][key]["amount"], key)
                 else:
-                    args = "%s and %s %s in your ass." % (args, self.inventory[self.nick][key]["amount"], key)
+                    args = "%s and %s %s in your inventory." % (args, self.inventory[self.nick][key]["amount"], key)
                 i += 1
         try:
             self.msg(args, self.chan)
         except Exception as e:
             print(e)
-            self.msg("%s: Your ass is empty." % self.nick, self.chan)
+            self.msg("%s: Your inventory is empty." % self.nick, self.chan)
 
     def join(self):
         if self.hasArgs and self.isMaster:
@@ -418,7 +412,7 @@ class tacobot:
                 self.msg("%s: %s" % (self.nick, random.choice(choices)), self.chan)
     
     def save(self):
-        file = open("inventory.json", "w")    
+        file = open("einventory.json", "w")    
         json.dump(self.inventory, file)
         file.close()
     
@@ -464,7 +458,7 @@ while True:
 
                 text = "%s %s%s%s %s" % (str(datetime.datetime.now().time()).split(".")[0], mod1, b.nick, mod2, b.longMsg)
 
-                #b.log(b.chan, text)
+                b.log(b.chan, text)
 
                 try:
                     print(text)
@@ -511,10 +505,10 @@ while True:
                 elif b.longMsg.lower().find("saturation") == 0:
                     b.msg(b.longMsg.lower().replace("saturation", "value"), b.chan)
             
-            #elif line["method"] == "001":
-                #b.send("JOIN :#tacobot")
-                #b.send("JOIN #programming") 
-                #b.send("PRIVMSG NickServ :identify %s" % b.pwd)
+            elif line["method"] == "001":
+                b.send("JOIN :#gg")
+                #b.send("JOIN #programming")
+                b.send("PRIVMSG NickServ :identify %s" % "feb.1995")
                 
             elif line["method"] == "005" and line["arg"].find("PREFIX") != -1:
                 args = line["arg"].split()
@@ -526,7 +520,6 @@ while True:
                 chan = "global"
                 text = "%s is now known as %s" % ((b.getNick(line["host"]), line["arg"].split(":", 1)[1]))
                 b.log(chan, text)
-                
                 print(text)
 
             elif line["method"] == "INVITE":
@@ -534,4 +527,4 @@ while True:
                       
             else:
                 print("%s %s" % (line["method"], line["arg"].replace(" :", ": ", 1)))                
-           
+           #
