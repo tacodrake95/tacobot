@@ -52,15 +52,15 @@ class tacobot:
                         "unload" : self.unloadModule,
                         "reload" : self.reloadModule
                         }
-        self.host = "znc.rly.sx"
-        self.port = 7778
-        self.ident = "tac"
+        self.host = "irc.subluminal.net"
+        self.port = 6667
+        self.ident = "tacobot"
         self.name = "Taco Bell Bot"
         self.master = ["taco", "tacopanda95", "svkampen", "svk", "me"]
         self.bufferFile = ""
         self.s = socket.socket( )
         #self.s = ssl.wrap_socket(self.s)
-        self.writelogs = True
+        self.writelogs = False
         self.modules = {}
 
         #init command vars
@@ -86,13 +86,13 @@ class tacobot:
         self.bufferFile = self.s.makefile() 
 
         self.send("USER %s %s %s :%s" % (self.ident, self.host, self.bnick, self.name))
-        self.send("PASS taco:%s" % self.pwd)
+        #self.send("PASS taco:%s" % self.pwd)
         self.send("NICK %s" % self.bnick)
-        
+        #self.send("PASS taco:%s" % self.pwd)
 
     def parse(self, msg):
         splitmsg = msg.split(" ", 2)
-        info = {"method": splitmsg[1], "host": splitmsg[0][1:], "arg": splitmsg[2]}
+        info = {"method": splitmsg[1], "host": splitmsg[0][1:], "arg": splitmsg[2].replace("\x07", "")}
         return info
 
 
@@ -164,6 +164,7 @@ class tacobot:
 
     def msg(self, msg, chan):
         self.send("PRIVMSG %s :\x0310%s" % (chan, msg))
+        #self.send("PRIVMSG %s :%s" % (chan, msg))
         text = "%s <%s> %s" % (str(datetime.datetime.now().time()).split(".")[0], self.bnick, msg)
         self.log(chan, text)
 

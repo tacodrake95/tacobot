@@ -1,6 +1,6 @@
 class main():
     def __init__(self, b):
-        self.newMasters = ["sammi", "Roman", "Ari", "nathan", "splashy"]
+        self.newMasters = ["sammi", "Roman", "astra", "nathan", "squishy"]
         self.b = b
         self.b.master.extend(self.newMasters)
 
