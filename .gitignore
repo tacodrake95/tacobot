@@ -2,3 +2,4 @@ pwd.dat
 inventory.json
 *.log
 *.swp
+__pycache__
