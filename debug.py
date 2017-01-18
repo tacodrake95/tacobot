@@ -4,7 +4,7 @@ class main():
         self.b = b
         
         self.commands = {
-                        "chansay"   : self.chanSay,
+                        "quit"      : self.reset,
                         }
         
         self.b.commands.update(self.commands)
@@ -15,7 +15,11 @@ class main():
             del self.b.commands[key]
         return True
 
-    def chanSay(self):
+    def reset(self):
         if self.b.isMaster(self.b.nick):
-            self.b.msg(self.b.longArg.split(" ", 1)[1], self.b.arg[0])
+            self.b.send("QUIT :%s" % self.b.longArg)
+            print("Quitting.")
+            self.b.s.close()
+            self.b.save()
+            sys.exit()
     
