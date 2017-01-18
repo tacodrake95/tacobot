@@ -67,7 +67,6 @@ class tacobot:
         self.bufferFile = ""
         self.s = socket.socket( )
         #self.s = ssl.wrap_socket(self.s)
-        self.writelogs = False
         self.modules = {}
 
         #init command vars
@@ -139,8 +138,7 @@ class tacobot:
     def action(self, msg, chan):
         self.send("PRIVMSG %s :\x01ACTION %s\x01" % (chan, msg))
         text = "%s *%s %s" % (str(datetime.datetime.now().time()).split(".")[0], self.bnick, msg)
-        #self.log(chan, text)
-
+        
     def getAuth(self, nick):
         """
         self.send("PRIVMSG NickServ ACC %s" % nick)
@@ -174,21 +172,6 @@ class tacobot:
     def send(self, msg):
         print(msg)
         self.s.sendall(bytes("%s\r\n" % msg, "UTF-8"))
-
-    def islogging(self):
-        if self.isMaster(self.nick):
-            if self.hasArgs:
-                if self.arg[0].lower() == "false":
-                    self.writelogs = False
-                elif self.arg[0].lower() == "true":
-                    self.writelogs = True
-            else:
-                self.writelogs = self.toggle(self.writelogs)
-    
-            if self.writelogs:
-                self.msg("Writing to logs", self.chan)
-            else:
-                self.msg("Not writing to logs", self.chan)
     
     def do(self):
         if self.hasArgs:
@@ -402,7 +385,6 @@ while True:
 
                 text = "%s %s%s%s %s" % (str(datetime.datetime.now().time()).split(".")[0], mod1, b.nick, mod2, b.longMsg)
 
-                #b.log(b.chan, text)
 
                 try:
                     print(text)
@@ -463,7 +445,6 @@ while True:
             elif line["method"] == "NICK":
                 chan = "global"
                 text = "%s is now known as %s" % ((b.getNick(line["host"]), line["arg"].split(":", 1)[1]))
-                b.log(chan, text)
                 
                 print(text)
 
