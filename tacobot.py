@@ -29,7 +29,6 @@ class tacobot:
         sys.path.append(os.getcwd())
 
         self.bnick = "tacobot"
-        self.master = "taco"
         self.commands = {
                         "raw" : self.raw,
                         "ping" : self.ping,
@@ -52,11 +51,11 @@ class tacobot:
                         "unload" : self.unloadModule,
                         "reload" : self.reloadModule
                         }
-        self.host = "irc.subluminal.net"
+        self.host = "irc.0x00sec.org"
         self.port = 6667
         self.ident = "tacobot"
         self.name = "Taco Bell Bot"
-        self.master = ["taco", "tacopanda95", "svkampen", "svk", "me"]
+        self.master = ["taco"]
         self.bufferFile = ""
         self.s = socket.socket( )
         #self.s = ssl.wrap_socket(self.s)
@@ -72,7 +71,7 @@ class tacobot:
         self.nick = ""
         self.hasArgs = False
 
-        self.pwd = open("%s%spwd.dat" % (os.getcwd(), pathSep)).readline().rstrip("\n")
+        self.pwd = ""#open("%s%spwd.dat" % (os.getcwd(), pathSep)).readline().rstrip("\n")
 
         file = open("inventory.json", "r")
 
@@ -135,6 +134,7 @@ class tacobot:
         #self.log(chan, text)
 
     def getAuth(self, nick):
+        """
         self.send("PRIVMSG NickServ ACC %s" % nick)
         line = {"method" : "NOMETHOD"}
         while line["method"] != "NOTICE":
@@ -144,10 +144,11 @@ class tacobot:
                line = {"method" : "NOMETHOD"}
             else:
                 line = self.parse(line)
-             
-        self.args = line["arg"].split()
-        print(line["arg"])
-        return(self.args[1].strip(":") in self.master and self.args[2]== "ACC" and self.args[3] == "3")
+        """     
+        #self.args = line["arg"].split()
+        #print(line["arg"])
+        #self.args[1].strip(":")
+        return(nick in self.master) #and self.args[2]== "ACC" and self.args[3] == "3")
 
     def toggle(self, boolean):
         try:
