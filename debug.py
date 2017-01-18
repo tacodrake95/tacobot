@@ -4,7 +4,7 @@ class main():
         self.b = b
         
         self.commands = {
-                        "action"    : self.do
+                        "nick"      : self.nickChange
                         }
         
         self.b.commands.update(self.commands)
@@ -14,7 +14,8 @@ class main():
         for key in self.commands:
             del self.b.commands[key]
         return True
-    
-    def do(self):
-        if self.b.hasArgs:
-            self.b.action(self.b.longArg, self.b.chan)
+
+    def nickChange(self):
+        if self.b.isMaster(self.b.nick) and self.b.hasArgs:
+            self.b.bnick = self.b.arg[0]
+            self.b.send("NICK %s" % self.b.bnick)
