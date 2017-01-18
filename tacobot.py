@@ -173,9 +173,6 @@ class tacobot:
         print(msg)
         self.s.sendall(bytes("%s\r\n" % msg, "UTF-8"))
     
-    def do(self):
-        if self.hasArgs:
-            self.action(self.longArg, self.chan)
 
     def isANum(self, num):
         if isinstance(num, int):
