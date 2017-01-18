@@ -52,7 +52,6 @@ class tacobot:
 
         self.bnick = "tacobot"
         self.commands = {
-                        
                         "give" : self.give,
                         "inventory" : self.inv,
                         "choose" : self.choose,

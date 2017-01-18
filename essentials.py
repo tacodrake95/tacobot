@@ -19,23 +19,23 @@ class main():
                         }
         
         self.b.commands.update(self.commands)
-
+    
     def unload (self):
         #Remove command references
         for key in self.commands:
             del self.b.commands[key]
         return True
-
+    
     def raw(self):
         if self.b.isMaster(self.b.nick):
            self.b.send(self.b.longArg)
-
+    
     def ping(self):
         if self.b.hasArgs:
             self.b.msg("Pong %s" % self.b.longArg, self.b.chan)
         else:
             self.b.msg("Pong", self.b.chan)
-
+    
     def reset(self):
         if self.b.isMaster(self.b.nick):
             self.b.send("QUIT :%s" % self.b.longArg)
@@ -43,7 +43,7 @@ class main():
             self.b.s.close()
             self.b.save()
             sys.exit()
-
+    
     def chanSay(self):
         if self.b.isMaster(self.b.nick):
             self.b.msg(self.b.longArg.split(" ", 1)[1], self.b.arg[0])
@@ -68,12 +68,12 @@ class main():
     def join(self):
         if self.b.hasArgs and self.b.isMaster:
             self.b.send("JOIN %s" % self.b.arg[0])
-
+    
     def nickChange(self):
         if self.b.isMaster(self.b.nick) and self.b.hasArgs:
             self.b.bnick = self.b.arg[0]
             self.b.send("NICK %s" % self.b.bnick)
-
+    
     def unloadModule(self):
         if self.b.isMaster(self.nick) and self.b.hasArgs:
             modName = self.b.arg[0]
@@ -89,7 +89,7 @@ class main():
                     self.b.msg("Module unloaded successfully.", self.b.chan)
             else:
                 self.b.msg("I haven't loaded that stupid module yet, shitwad.", self.b.chan)
-
+    
     def reloadModule(self):
         if self.b.isMaster(self.b.nick):
             self.unloadModule()
