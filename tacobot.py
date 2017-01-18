@@ -194,9 +194,6 @@ class tacobot:
         if self.hasArgs:
             self.action(self.longArg, self.chan)
 
-    def cwd(self):
-        self.msg(os.getcwd(), self.chan)
-
     def isANum(self, num):
         if isinstance(num, int):
             return True
