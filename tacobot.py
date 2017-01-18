@@ -52,26 +52,13 @@ class tacobot:
 
         self.bnick = "tacobot"
         self.commands = {
-                        "raw" : self.raw,
-                        "ping" : self.ping,
-                        "quit" : self.reset,
-                        "reset" : self.reset,
-                        "getcwd" : self.cwd,
+                        
                         "give" : self.give,
                         "inventory" : self.inv,
-                        "chansay" : self.chanSay,
                         "choose" : self.choose,
-                        "part" : self.part,
-                        "join" : self.join,
-                        "nick" : self.nickChange,
                         "commands" : self.commands,
-                        "log" : self.islogging,
-                        "action" : self.do,
-                        "penis" : self.penis,
                         "say" : self.say,
                         "load" : self.loadModule,
-                        "unload" : self.unloadModule,
-                        "reload" : self.reloadModule
                         }
         self.host = "irc.0x00sec.org"
         self.port = 6667
@@ -178,18 +165,11 @@ class tacobot:
         except:
             print("Not a boolean")
             return boolean
-    
-    def log(self, chan, text):
-        if b.writelogs and chan.strip() != "#18+":
-            log = open("logs/%s_log.log" % chan.strip(), "a")
-            log.write("%s\n" % text)
-            log.close()
 
     def msg(self, msg, chan):
-        self.send("PRIVMSG %s :\x0310%s" % (chan, msg))
-        #self.send("PRIVMSG %s :%s" % (chan, msg))
+        #self.send("PRIVMSG %s :\x0310%s" % (chan, msg))
+        self.send("PRIVMSG %s :%s" % (chan, msg))
         text = "%s <%s> %s" % (str(datetime.datetime.now().time()).split(".")[0], self.bnick, msg)
-        self.log(chan, text)
 
 
     def send(self, msg):
@@ -214,20 +194,6 @@ class tacobot:
     def do(self):
         if self.hasArgs:
             self.action(self.longArg, self.chan)
-
-    def ping(self):
-        if self.hasArgs:
-            self.msg("Pong %s" % self.longArg, self.chan)
-        else:
-            self.msg("Pong", self.chan)
-
-    def reset(self):
-        if self.isMaster(self.nick):
-            self.send("QUIT :Quitting")
-            print("Quitting.")
-            self.s.close()
-            self.save()
-            sys.exit()
 
     def cwd(self):
         self.msg(os.getcwd(), self.chan)
@@ -267,30 +233,7 @@ class tacobot:
             else:
                 self.msg("Check your fucking spelling, because I can't find that one. Dickface.", self.chan)
 
-    def unloadModule(self):
-        if self.isMaster(self.nick) and self.hasArgs:
-            modName = self.arg[0]
-            if modName in self.modules:
-                if not self.modules[modName].unload():
-                    self.msg("It seems as though your unload procedure failed in this module. Ther may be residual goo from the module.", self.chan)
-                    unloadFail = True
-                else:
-                    unloadFail = False
-                del self.modules[modName]
-                del sys.modules[modName]
-                if not unloadFail:
-                    self.msg("Module unloaded successfully.", self.chan)
-            else:
-                self.msg("I haven't loaded that stupid module yet, shitwad.", self.chan)
-
-    def reloadModule(self):
-        if self.isMaster(self.nick):
-            self.unloadModule()
-            self.loadModule()
-
-    def raw(self):
-        if self.isMaster(self.nick):
-           self. send(self.longArg)
+    
 
     def give(self):
         
@@ -391,34 +334,9 @@ class tacobot:
             print(e)
             self.msg("%s: Your ass is empty." % self.nick, self.chan)
 
-    def join(self):
-        if self.hasArgs and self.isMaster:
-            self.send("JOIN %s" % self.arg[0])
 
-    def part(self):
-        if self.isMaster:
-            if self.hasArgs:
-                if len(self.arg) == 1:
-                    if self.arg[0] == "":
-                        args = self.chan
-                    else:
-                        args = self.arg[0]
-                elif len(self.arg) >= 2:
-                    lArg = self.longArg.split(" ", 1)[1]
-                    args = "%s :%s" % (self.arg[0], lArg)
-            else:
-                args = self.chan
-                        
-            self.send("PART %s" % args)
 
-    def chanSay(self):
-        if self.isMaster(self.nick):
-            self.msg(self.longArg.split(" ", 1)[1], self.arg[0])
-    
-    def nickChange(self):
-        if self.isMaster(self.nick) and self.hasArgs:
-            self.bnick = self.arg[0]
-            self.send("NICK %s" % self.bnick)
+        
     
     def penis(self):
         if self.hasArgs:
