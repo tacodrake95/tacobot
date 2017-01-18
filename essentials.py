@@ -62,7 +62,7 @@ class main():
                     args = "%s :%s" % (self.b.arg[0], lArg)
             else:
                 args = self.b.chan
-                        
+    
             self.b.send("PART %s" % args)
 
     def join(self):
