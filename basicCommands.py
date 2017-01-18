@@ -5,8 +5,7 @@ class main():
         
         self.commands = {
                         "raw" : self.raw,
-                        "ping" : self.ping,
-                        
+                        "ping" : self.ping
                         }
         
         self.b.commands.update(self.commands)
