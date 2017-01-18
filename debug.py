@@ -4,7 +4,7 @@ class main():
         self.b = b
         
         self.commands = {
-                        "part"      : self.part,
+                        "chansay"   : self.chanSay,
                         }
         
         self.b.commands.update(self.commands)
@@ -15,18 +15,7 @@ class main():
             del self.b.commands[key]
         return True
 
-    def part(self):
+    def chanSay(self):
         if self.b.isMaster(self.b.nick):
-            if self.b.hasArgs:
-                if len(self.b.arg) == 1:
-                    if self.b.arg[0] == "":
-                        args = self.b.chan
-                    else:
-                        args = self.b.arg[0]
-                elif len(self.b.arg) >= 2:
-                    lArg = self.b.longArg.split(" ", 1)[1]
-                    args = "%s :%s" % (self.b.arg[0], lArg)
-            else:
-                args = self.b.chan
-                        
-            self.b.send("PART %s" % args)
+            self.b.msg(self.b.longArg.split(" ", 1)[1], self.b.arg[0])
+    
