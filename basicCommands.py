@@ -6,14 +6,14 @@ class main():
         self.b = b
         
         self.commands = {
-                        "raw" : self.raw,
-                        "ping" : self.ping,
-                        "quit" : self.reset,
-                        "chansay" : self.chanSay,
-                        "part" : self.part,
-                        "join" : self.join,
-                        "nick" : self.nickChange,
-                        "action" : self.do
+                        "raw"       : self.raw,
+                        "ping"      : self.ping,
+                        "quit"      : self.reset,
+                        "chansay"   : self.chanSay,
+                        "part"      : self.part,
+                        "join"      : self.join,
+                        "nick"      : self.nickChange,
+                        "action"    : self.do
                         }
         
         self.b.commands.update(self.commands)
@@ -47,7 +47,7 @@ class main():
             self.b.msg(self.b.longArg.split(" ", 1)[1], self.b.arg[0])
     
     def part(self):
-        if self.b.isMaster:
+        if self.b.isMaster(self.b.nick):
             if self.b.hasArgs:
                 if len(self.b.arg) == 1:
                     if self.b.arg[0] == "":
@@ -63,7 +63,7 @@ class main():
             self.b.send("PART %s" % args)
 
     def join(self):
-        if self.b.hasArgs and self.b.isMaster:
+        if self.b.hasArgs and self.b.isMaster(self.b.nick):
             self.b.send("JOIN %s" % self.b.arg[0])
     
     def nickChange(self):
