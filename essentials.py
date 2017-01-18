@@ -1,4 +1,4 @@
-import syst
+import sys
 
 class main():
     
@@ -6,16 +6,13 @@ class main():
         self.b = b
         
         self.commands = {
-                        "raw" : self.raw,
-                        "ping" : self.ping,
                         "quit" : self.reset,
                         "reset" : self.reset,
-                        "getcwd" : self.cwd,
                         "chansay" : self.chanSay,
                         "part" : self.part,
                         "join" : self.join,
                         "nick" : self.nickChange,
-                        "action" : self.do,
+                        "action" : self.do
                         }
         
         self.b.commands.update(self.commands)
