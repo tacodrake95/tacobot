@@ -17,7 +17,7 @@ class main():
         return True
 
     def unloadModule(self):
-        if self.b.isMaster(self.nick) and self.b.hasArgs:
+        if self.b.isMaster(self.b.nick) and self.b.hasArgs:
             modName = self.b.arg[0]
             if modName in self.b.modules:
                 if not self.b.modules[modName].unload():
