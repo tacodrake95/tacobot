@@ -1,4 +1,4 @@
-import sys
+import syst
 
 class main():
     
