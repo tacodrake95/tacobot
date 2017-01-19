@@ -9,6 +9,7 @@ class main():
                         "ping"      : self.ping,
                         "quit"      : self.reset,
                         "chansay"   : self.chanSay,
+                        "part"      : self.part,
                         }
         
         self.b.commands.update(self.commands)
@@ -40,3 +41,19 @@ class main():
     def chanSay(self):
         if self.b.isMaster(self.b.nick):
             self.b.msg(self.b.longArg.split(" ", 1)[1], self.b.arg[0])
+
+    def part(self):
+        if self.b.isMaster(self.b.nick):
+            if self.b.hasArgs:
+                if len(self.b.arg) == 1:
+                    if self.b.arg[0] == "":
+                        args = self.b.chan
+                    else:
+                        args = self.b.arg[0]
+                elif len(self.b.arg) >= 2:
+                    lArg = self.b.longArg.split(" ", 1)[1]
+                    args = "%s :%s" % (self.b.arg[0], lArg)
+            else:
+                args = self.b.chan
+                        
+            self.b.send("PART %s" % args)
