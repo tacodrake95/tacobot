@@ -12,7 +12,8 @@ class main():
                         "part"      : self.part,
                         "join"      : self.join,
                         "nick"      : self.nickChange,
-                        "action"    : self.do
+                        "action"    : self.do,
+                        "say"       : self.say,
                         }
         
         self.b.commands.update(self.commands)
@@ -73,3 +74,10 @@ class main():
     def do(self):
         if self.b.hasArgs:
             self.b.action(self.b.longArg, self.b.chan)
+
+    def say(self):
+        if self.hasArgs:
+           self.msg(self.longArg, self.chan)
+        else:
+            self.msg("No args", self.chan)
+

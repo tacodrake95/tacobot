@@ -56,7 +56,6 @@ class tacobot:
                         "inventory" : self.inv,
                         "choose" : self.choose,
                         "commands" : self.commands,
-                        "say" : self.say,
                         "load" : self.loadModule,
                         }
         self.host = "irc.0x00sec.org"
