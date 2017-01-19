@@ -10,6 +10,7 @@ class main():
                         "quit"      : self.reset,
                         "chansay"   : self.chanSay,
                         "part"      : self.part,
+                        "join"      : self.join,
                         }
         
         self.b.commands.update(self.commands)
@@ -57,3 +58,7 @@ class main():
                 args = self.b.chan
                         
             self.b.send("PART %s" % args)
+
+    def join(self):
+        if self.b.hasArgs and self.b.isMaster(self.b.nick):
+            self.b.send("JOIN %s" % self.b.arg[0])
