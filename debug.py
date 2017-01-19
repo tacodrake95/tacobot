@@ -12,7 +12,7 @@ class main():
                         "part"      : self.part,
                         "join"      : self.join,
                         "nick"      : self.nickChange,
-                        
+                        "action"    : self.do
                         }
         
         self.b.commands.update(self.commands)
@@ -70,3 +70,6 @@ class main():
             self.b.bnick = self.b.arg[0]
             self.b.send("NICK %s" % self.b.bnick)
 
+    def do(self):
+        if self.b.hasArgs:
+            self.b.action(self.b.longArg, self.b.chan)
