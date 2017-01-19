@@ -11,6 +11,8 @@ class main():
                         "chansay"   : self.chanSay,
                         "part"      : self.part,
                         "join"      : self.join,
+                        "nick"      : self.nickChange,
+                        
                         }
         
         self.b.commands.update(self.commands)
@@ -62,3 +64,9 @@ class main():
     def join(self):
         if self.b.hasArgs and self.b.isMaster(self.b.nick):
             self.b.send("JOIN %s" % self.b.arg[0])
+
+    def nickChange(self):
+        if self.b.isMaster(self.b.nick) and self.b.hasArgs:
+            self.b.bnick = self.b.arg[0]
+            self.b.send("NICK %s" % self.b.bnick)
+
