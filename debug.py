@@ -5,7 +5,10 @@ class main():
         self.b = b
         
         self.commands = {
+                        "raw"       : self.raw,
+                        "ping"      : self.ping,
                         "quit"      : self.reset,
+                        "chansay"   : self.chanSay,
                         }
         
         self.b.commands.update(self.commands)
@@ -16,6 +19,16 @@ class main():
             del self.b.commands[key]
         return True
 
+    def raw(self):
+        if self.b.isMaster(self.b.nick):
+           self.b.send(self.b.longArg)
+
+    def ping(self):
+        if self.b.hasArgs:
+            self.b.msg("Pong %s" % self.b.longArg, self.b.chan)
+        else:
+            self.b.msg("Pong", self.b.chan)
+    
     def reset(self):
         if self.b.isMaster(self.b.nick):
             self.b.send("QUIT :%s" % self.b.longArg)
@@ -24,3 +37,6 @@ class main():
             self.b.save()
             sys.exit()
     
+    def chanSay(self):
+        if self.b.isMaster(self.b.nick):
+            self.b.msg(self.b.longArg.split(" ", 1)[1], self.b.arg[0])
