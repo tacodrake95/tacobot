@@ -1,5 +1,4 @@
 import sys
-
 class main():
     
     def __init__(self, b):
@@ -45,7 +44,7 @@ class main():
     def chanSay(self):
         if self.b.isMaster(self.b.nick):
             self.b.msg(self.b.longArg.split(" ", 1)[1], self.b.arg[0])
-    
+
     def part(self):
         if self.b.isMaster(self.b.nick):
             if self.b.hasArgs:
@@ -65,7 +64,7 @@ class main():
     def join(self):
         if self.b.hasArgs and self.b.isMaster(self.b.nick):
             self.b.send("JOIN %s" % self.b.arg[0])
-    
+
     def nickChange(self):
         if self.b.isMaster(self.b.nick) and self.b.hasArgs:
             self.b.bnick = self.b.arg[0]
@@ -74,5 +73,3 @@ class main():
     def do(self):
         if self.b.hasArgs:
             self.b.action(self.b.longArg, self.b.chan)
-
-
