@@ -42,11 +42,11 @@ class tacobot:
 
     def __init__(self):
         if sys.platform == "win32":
-            pathSep = "\\"
+            self.pathSep = "\\"
         else:
-            pathSep = "/"
+            self.pathSep = "/"
 
-        os.chdir(os.path.abspath(sys.argv[0]).rsplit(pathSep, 1)[0])
+        os.chdir(os.path.abspath(sys.argv[0]).rsplit(self.pathSep, 1)[0])
         
         sys.path.append(os.getcwd())
 
@@ -56,7 +56,6 @@ class tacobot:
                         "inventory" : self.inv,
                         "choose" : self.choose,
                         "commands" : self.commands,
-                        "say" : self.say,
                         "load" : self.loadModule,
                         }
         self.host = "irc.0x00sec.org"
@@ -188,10 +187,11 @@ class tacobot:
     def loadModule(self):
         if self.isMaster(self.nick) and self.hasArgs:
             modName = self.arg[0]
-            if os.path.isfile("%s.py" % modName):
+            if os.path.isfile("%smodules%s%s.py" % (sys.path, self.pathSep, modName)):
                 initFail = False
                 try:
-                    self.modules[modName] = importlib.import_module(modName).main(self)
+                    self.modules[modName] = importlib.import_module("%smodules%s%s.py" % (sys.path, self.pathSep, modName)).main(self)
+                    
                 except AttributeError:
                     self.msg("You need a main class fuckface", self.chan)
                 else:
@@ -208,6 +208,7 @@ class tacobot:
                         self.msg("Module loaded successfully", self.chan)
             else:
                 self.msg("Check your fucking spelling, because I can't find that one. Dickface.", self.chan)
+                self.msg("the attempted path is: %s" % ("%smodules%s%s.py" % (sys.path, self.pathSep, modName)), self.chan)
 
     
 
