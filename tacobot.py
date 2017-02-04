@@ -187,10 +187,10 @@ class tacobot:
     def loadModule(self):
         if self.isMaster(self.nick) and self.hasArgs:
             modName = self.arg[0]
-            if os.path.isfile("%smodules%s%s.py" % (sys.path, self.pathSep, modName)):
+            if os.path.isfile("%smodules%s%s.py" % (os.getcwd(), self.pathSep, modName)):
                 initFail = False
                 try:
-                    self.modules[modName] = importlib.import_module("%smodules%s%s.py" % (sys.path, self.pathSep, modName)).main(self)
+                    self.modules[modName] = importlib.import_module("%smodules%s%s.py" % (os.getcwd(), self.pathSep, modName)).main(self)
                     
                 except AttributeError:
                     self.msg("You need a main class fuckface", self.chan)
