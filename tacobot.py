@@ -187,7 +187,8 @@ class tacobot:
     def loadModule(self):
         if self.isMaster(self.nick) and self.hasArgs:
             modName = self.arg[0]
-            if os.path.isfile("%s%s:modules%s%s.py" % (os.getcwd(), self.pathSep, self.pathSep, modName)):
+            if os.path.isfile("%s%smodules%s%s.py" % (os.getcwd(), self.pathSep, self.pathSep, modName)):
+
                 initFail = False
                 try:
                     self.modules[modName] = importlib.import_module("%s%smodules%s%s.py" % (os.getcwd(), self.pathSep, self.pathSep, modName)).main(self)
