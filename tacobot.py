@@ -33,11 +33,6 @@ import importlib
 
 import os.path
 
-class gvars:
-    
-    def __init__(self):
-        self.flags = ""
-        
 class tacobot:
 
     def __init__(self):
@@ -51,18 +46,12 @@ class tacobot:
         sys.path.append(os.getcwd())
 
         self.bnick = "tacobot"
-        self.commands = {
-                        "give" : self.give,
-                        "inventory" : self.inv,
-                        "choose" : self.choose,
-                        "commands" : self.commands,
-                        "load" : self.loadModule,
-                        }
+        self.commands = {"load" : self.loadModule}
         self.host = "irc.0x00sec.org"
         self.port = 6667
         self.ident = "tacobot"
         self.name = "Taco Bell Bot"
-        self.master = ["taco"]
+        self.master = ["taco", "not_taco"]
         self.bufferFile = ""
         self.s = socket.socket( )
         #self.s = ssl.wrap_socket(self.s)
@@ -79,22 +68,13 @@ class tacobot:
 
         self.pwd = ""#open("%s%spwd.dat" % (os.getcwd(), pathSep)).readline().rstrip("\n")
 
-        file = open("inventory.json", "r")
-
-        self.inventory = json.load(file)
-        
-        file.close()
-        
+     
     def connect(self):
         self.s.connect((self.host, self.port))
-
-        self.bufferFile = self.s.makefile() 
-
+        self.bufferFile = self.s.makefile()
         self.send("USER %s %s %s :%s" % (self.ident, self.host, self.bnick, self.name))
-        #self.send("PASS taco:%s" % self.pwd)
         self.send("NICK %s" % self.bnick)
-        #self.send("PASS taco:%s" % self.pwd)
-
+ 
     def parse(self, msg):
         splitmsg = msg.split(" ", 2)
         info = {"method": splitmsg[1], "host": splitmsg[0][1:], "arg": splitmsg[2].replace("\x07", "")}
@@ -191,7 +171,7 @@ class tacobot:
 
                 initFail = False
                 try:
-                    self.modules[modName] = importlib.import_module("%s%smodules%s%s.py" % (os.getcwd(), self.pathSep, self.pathSep, modName)).main(self)
+                    self.modules[modName] = importlib.import_module(".%ssmodules%s%s.py" % (self.pathSep, self.pathSep, modName)).main(self)
                     
                 except AttributeError:
                     self.msg("You need a main class fuckface", self.chan)
@@ -211,139 +191,8 @@ class tacobot:
                 self.msg("Check your fucking spelling, because I can't find that one. Dickface.", self.chan)
                 self.msg("the attempted path is: %s" % ("%s%smodules%s%s.py" % (os.getcwd(), self.pathSep, self.pathSep, modName)), self.chan)
 
-    
 
-    def give(self):
-        
-        fromNick = self.nick.lower()
-        if self.hasArgs:
-            toNick = self.arg[0].lower()
-
-        if not (fromNick in self.inventory.keys()):
-            self.inventory[fromNick] = {"dong": {"amount": 1}}
-            self.save()
-            
-        if self.hasArgs:
-            if True:#self.isInChannel(toNick, self.chan):
-                if not (toNick in self.inventory.keys()):
-                    self.inventory[toNick] = {"dong": {"amount": 1}}
-                    self.save()
-                    
-                if len(self.arg) >= 2:
-                    if self.isANum(self.arg[1]):
-                        if len(self.arg) >= 3:
-                            item = self.longArg.split(" ", 2)[2]
-                            amount = int(self.arg[1])
-                        else:
-                            amount = 0
-                    else:
-                        if self.arg[1].lower() == "a" or self.arg[1].lower() == "an":
-                            item = self.longArg.split(" ", 2)[2]
-                        else:
-                            item = self.longArg.split(" ", 1)[1]
-                        amount = 1
-
-                    if amount > 0:
-                        if item in self.inventory[fromNick].keys():
-                            if self.inventory[fromNick][item]["amount"] >= amount:
-                                self.msg("%s: you have given %s %s %s." % (self.nick, self.arg[0], amount, item), self.chan)
-                                self.inventory[fromNick][item]["amount"] -= amount
-                                if item in self.inventory[toNick].keys():
-                                    self.inventory[toNick][item]["amount"] += amount
-                                else:
-                                    self.inventory[toNick][item]= {"amount": amount}
-                                self.save()
-                            else:
-                                self.msg("%s: You don't have enough %s" %(fromNick, item), self.chan)
-                        else:
-                            self.msg("%s: You don't have any %s." % (fromNick, item), self.chan)
-                    else:
-                        self.msg("%s: Format incorrect or invalid number, try again." % fromNick, self.chan)
-                else:
-                    self.msg("%s: Not enough arguments." % fromNick, self.chan)
-            else:
-                self.msg("%s: %s is not in the channel." % (fromNick, toNick), self.chan)
-    
-    def commands(self):
-        self.send("NOTICE %s :Commands:" % self.nick)
-        commands = ""
-        for key in self.commands:
-            commands = "%s %s" % (commands, key)
-            
-        commands = commands.strip().replace(" ", ", ")
-        self.send("NOTICE %s :%s" % (self.nick, commands))
-    
-    def inv(self):
-
-        self.nick = self.nick.lower()
-
-        if not (self.nick in self.inventory.keys()):
-            self.inventory[self.nick] = {"dong": {"amount": 1}}
-            self.save()
-
-        for key in list(self.inventory[self.nick].keys()):
-            if self.inventory[self.nick][key]["amount"] == 0:
-                del(self.inventory[self.nick][key])
-                
-        if len(self.inventory[self.nick]) == 1:
-            for key in self.inventory[self.nick]:
-                args = "%s: you have %s %s in your ass." % (self.nick, self.inventory[self.nick][key]["amount"], key)
-        elif len(self.inventory[self.nick]) == 2:
-            i = 1
-            for key in self.inventory[self.nick]:
-                if i == 1:
-                    args = "%s: you have %s %s" % (self.nick, self.inventory[self.nick][key]["amount"], key)
-                else:
-                    args = "%s and %s %s in your ass." % (args, self.inventory[self.nick][key]["amount"], key)
-                i += 1                            
-        else:
-            i = 2
-            for key in self.inventory[self.nick]:
-                if i == 2:
-                    args = "%s: you have %s %s," % (self.nick, self.inventory[self.nick][key]["amount"], key)
-                elif i <= len(self.inventory[self.nick]):
-                    args = "%s %s %s," % (args, self.inventory[self.nick][key]["amount"], key)
-                else:
-                    args = "%s and %s %s in your ass." % (args, self.inventory[self.nick][key]["amount"], key)
-                i += 1
-        try:
-            self.msg(args, self.chan)
-        except Exception as e:
-            print(e)
-            self.msg("%s: Your ass is empty." % self.nick, self.chan)
-
-
-
-        
-    
-    def penis(self):
-        if self.hasArgs:
-            self.msg("dong %s" % self.longArg, self.chan)
-        else:
-            self.msg("dong", self.chan)
-
-    def say(self):
-        if self.hasArgs:
-           self.msg(self.longArg, self.chan)
-        else:
-            self.msg("No args", self.chan)
-
-    def choose(self):
-        if self.hasArgs:
-            choices = self.longArg.split(",")
-            i = 0
-            if len(choices) > 1:
-                for i in range(1, len(choices)):
-                    choices[i] = choices[i].strip()
-                self.msg("%s: %s" % (self.nick, random.choice(choices)), self.chan)
-    
-    def save(self):
-        file = open("inventory.json", "w")    
-        json.dump(self.inventory, file)
-        file.close()
-    
-globals = gvars()
-b = tacobot()
+b=tacobot()
 b.connect()
 
 while True:
