@@ -33,6 +33,11 @@ import importlib
 
 import os.path
 
+class gvars:
+    
+    def __init__(self):
+        self.flags = ""
+        
 class tacobot:
 
     def __init__(self):
@@ -168,10 +173,9 @@ class tacobot:
         if self.isMaster(self.nick) and self.hasArgs:
             modName = self.arg[0]
             if os.path.isfile("%s%smodules%s%s.py" % (os.getcwd(), self.pathSep, self.pathSep, modName)):
-
                 initFail = False
                 try:
-                    self.modules[modName] = importlib.import_module(".%ssmodules%s%s.py" % (self.pathSep, self.pathSep, modName)).main(self)
+                    self.modules[modName] = importlib.import_module("%s%smodules%s%s.py" % (os.getcwd(), self.pathSep, self.pathSep, modName)).main(self)
                     
                 except AttributeError:
                     self.msg("You need a main class fuckface", self.chan)
@@ -192,8 +196,11 @@ class tacobot:
                 self.msg("the attempted path is: %s" % ("%s%smodules%s%s.py" % (os.getcwd(), self.pathSep, self.pathSep, modName)), self.chan)
 
 
+
 b=tacobot()
 b.connect()
+
+globals = gvars
 
 while True:
     b.command = ""
